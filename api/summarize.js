@@ -1,3 +1,4 @@
+import { traceable } from "langsmith/traceable";
 import { buildPrompt } from "../server/src/prompt.js";
 
 const MAX_CHARACTERS = 12000;
@@ -48,6 +49,11 @@ async function summarizeWithGroq({ content, summaryLength, summaryFormat }) {
   return summary;
 }
 
+const tracedSummarizeWithGroq = traceable(summarizeWithGroq, {
+  name: "content-summarise-vercel-api",
+  tags: ["content-summarizer", "vercel", "groq"]
+});
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Only POST requests are allowed." });
@@ -74,7 +80,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: "Invalid summary format." });
     }
 
-    const summary = await summarizeWithGroq({ content, summaryLength, summaryFormat });
+    const summary = await tracedSummarizeWithGroq({ content, summaryLength, summaryFormat });
     return res.status(200).json({ summary });
   } catch (error) {
     console.error("Vercel summarize error:", error.message);

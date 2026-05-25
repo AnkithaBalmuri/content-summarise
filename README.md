@@ -214,3 +214,19 @@ CLIENT_URL=http://localhost:5173,https://your-vercel-app.vercel.app
 - Extremely large input is rejected safely.
 - API keys stay on the backend or Vercel Environment Variables only. Never put API keys in React code.
 - If no API key is configured, the backend returns a clear error instead of crashing.
+
+## LangSmith Tracing
+
+This app wraps the summarizer function with the LangSmith JavaScript SDK, so successful summarize requests can appear in your LangSmith project when tracing is enabled.
+
+Add these values locally in `server/.env` and in Vercel Environment Variables:
+
+```env
+LANGSMITH_TRACING=true
+LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+LANGSMITH_API_KEY=your_langsmith_api_key_here
+LANGSMITH_PROJECT=content-summarise
+GOOGLE_API_KEY=your_google_api_key_here
+```
+
+Keep real API keys out of GitHub. The local `server/.env` file is ignored by `.gitignore`.

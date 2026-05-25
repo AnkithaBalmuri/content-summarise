@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { traceable } from "langsmith/traceable";
 import OpenAI from "openai";
 import { buildPrompt } from "./prompt.js";
 
@@ -79,7 +80,7 @@ async function summarizeWithGroq(prompt) {
   return data.choices?.[0]?.message?.content?.trim();
 }
 
-export default async function summarizeContent(options) {
+const summarizeContent = traceable(async function summarizeContent(options) {
   const prompt = buildPrompt(options);
   const provider = (process.env.AI_PROVIDER || "groq").toLowerCase();
   let summary;
@@ -99,4 +100,9 @@ export default async function summarizeContent(options) {
   }
 
   return summary;
-}
+}, {
+  name: "content-summarise-backend",
+  tags: ["content-summarizer", "express"]
+});
+
+export default summarizeContent;
